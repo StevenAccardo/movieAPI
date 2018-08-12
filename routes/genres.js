@@ -6,14 +6,10 @@ const { Genre, validate } = require('../models/Genre');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 
-//Gets all genres in DB and returns them in alphabetical order by their name field
 router.get('/', async (req, res) => {
-  try {
+  throw new Error('Could not get the genres');
+  //Gets all genres in DB and returns them in alphabetical order by their name field
     res.send(await Genre.find().sort('name'));
-  }
-  catch(err) {
-    res.status(500).send('Somethinf failed');
-  }
 });
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
