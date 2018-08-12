@@ -3,9 +3,18 @@ const express = require('express');
 const router = express.Router();
 
 const { Genre, validate } = require('../models/Genre');
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 
 //Gets all genres in DB and returns them in alphabetical order by their name field
-router.get('/', async (req, res) => res.send(await Genre.find().sort('name')));
+router.get('/', async (req, res) => {
+  try {
+    res.send(await Genre.find().sort('name'));
+  }
+  catch(err) {
+    res.status(500).send('Somethinf failed');
+  }
+});
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -19,7 +28,7 @@ router.get('/:id', async (req, res) => {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Creates a new genre in the DB
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   //pulls off the error property
   const { error } = validate(req.body);
   //If the error property is not null, then send back an error message by sending status of 400 and accessing the message property on the error object
@@ -51,7 +60,7 @@ router.put('/:id', async (req, res) => {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', [auth, admin], async (req, res) => {
   const genre = await Genre.findByIdAndRemove(req.params.id);
   if (!genre) return res.status(404).send('The genre with the given ID was not found.');
 
