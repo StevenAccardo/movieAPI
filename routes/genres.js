@@ -5,16 +5,17 @@ const router = express.Router();
 const { Genre, validate } = require('../models/Genre');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const validateObjectId = require('../middleware/validateObjectId');
 
 router.get('/', async (req, res) => {
-  throw new Error('Could not get the genres');
   //Gets all genres in DB and returns them in alphabetical order by their name field
     res.send(await Genre.find().sort('name'));
 });
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateObjectId, async (req, res) => {
+
   const genre = await Genre.findById(req.params.id);
   if (!genre) return res.status(404).send('The genre with the given ID was not found.');
 
